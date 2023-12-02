@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pydantic
+python-multipart
+pytest
+pytest-dependency
+openpyxl
+pandas
