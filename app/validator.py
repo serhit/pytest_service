@@ -4,7 +4,8 @@ from common_types import ConfigType, TestResult, FileValidationResult
 import glob
 import os
 
-import multiprocessing as mp
+import asyncio
+import concurrent.futures
 
 
 class ResultsCollector:
@@ -52,7 +53,9 @@ class FileRef:
         pytest.data_file_name = config.option.file
 
 
-def _run(file_name: str, file_type: ConfigType, q):
+def _run(file_name: str,
+         file_type: ConfigType
+         ):
     collector = ResultsCollector()
     file_ref = FileRef()
     plugins = [collector, file_ref]
@@ -68,17 +71,16 @@ def _run(file_name: str, file_type: ConfigType, q):
 
     pytest.main(files, plugins=plugins)
 
-    q.put(collector)
+    return collector
 
 
-def run_test(file_name: str, file_type: ConfigType):
+async def run_test(file_name: str, file_type: ConfigType):
     # Need to run tests into totally different process to make it not to "stuck" with the first file
 
-    q = mp.Queue()
-    p = mp.Process(target=_run, args=(file_name, file_type, q))
-    p.start()
-    collector = q.get()
-    p.join()
+    loop = asyncio.get_running_loop()
+
+    with concurrent.futures.ProcessPoolExecutor() as pool:
+        collector = await loop.run_in_executor(pool, _run, file_name, file_type)
 
     failed_tests = []
     for report in collector.reports:

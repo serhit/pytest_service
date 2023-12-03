@@ -67,7 +67,7 @@ async def validate_file(config_type: ConfigType,
         _file.write(_content)
         _tmp_file_name = _file.name
 
-    res = validator.run_test(_tmp_file_name, config_type)
+    res = await validator.run_test(_tmp_file_name, config_type)
     res.file_name = file.filename
     res.version = __version__
 
