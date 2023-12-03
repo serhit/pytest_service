@@ -23,6 +23,9 @@ tests being executed for each of the line of the file.
    While passing results of the test execution one should be careful to ensure that all results are
    serializable ("pickle-able").
 
+Detail description of the approach, discovered issues and other reference information is
+described in the [habr.com article](https://habr.com/ru/articles/776546/)  (RU)
+
 # Project structure and dependencies
 
 ## Folders
